@@ -1,25 +1,49 @@
-import Session from '../models/Session.js';
-import { rankBySimilarity } from '../services/similarityService.js';
+import Session from "../models/Session.js";
+import { rankBySimilarity } from "../services/similarityService.js";
 
 export const analyseSession = async (req, res, next) => {
   try {
     const { sessionId } = req.params;
+
+    console.log(`Analyzing session: ${sessionId}`);
+
     const session = await Session.findById(sessionId);
-    if (!session) return res.status(404).json({ message: 'Session not found' });
+    if (!session) {
+      return res.status(404).json({ message: "Session not found" });
+    }
 
-    const ranked = rankBySimilarity(session.jobEmbedding, session.resumes);
+    console.log(
+      "Session found, job description:",
+      session.jobDescription?.substring(0, 100) + "..."
+    );
 
-    // store back ranked list with scores
-    session.resumes = ranked;
-    await session.save();
+    // Re-rank the resumes with the stored job description
+    const rankedResumes = rankBySimilarity(
+      session.jobEmbedding,
+      session.resumes,
+      session.jobDescription
+    );
 
-    // lightweight response
-    const summary = ranked.map((r, idx) => ({
-      rank: idx + 1,
-      name: r.originalName,
-      score: r.score
-    }));
+    // Prepare response data (strip embeddings for smaller payload)
+    const responseData = {
+      sessionId: session._id,
+      jobDescription: session.jobDescription,
+      createdAt: session.createdAt,
+      totalResumes: session.totalFiles,
+      successfulResumes: session.successfulProcesses,
+      resumes: rankedResumes.map((resume) => ({
+        originalName: resume.originalName,
+        score: resume.score,
+        keywords: resume.keyword || [],
+        status: resume.status,
+        keywordScore: resume.keywordScore,
+        semanticScore: resume.semanticScore,
+      })),
+    };
 
-    res.json({ summary });
-  } catch (err) { next(err); }
+    res.json(responseData);
+  } catch (err) {
+    console.error("Analysis controller error:", err);
+    next(err);
+  }
 };

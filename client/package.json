@@ -2,7 +2,7 @@
   "name": "resume-recommender-client",
   "version": "0.1.0",
   "private": true,
-  "proxy": "http://localhost:5000",
+  "proxy": "https://jhlf5x-5000.csb.app",
   "dependencies": {
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
@@ -10,7 +10,7 @@
     "axios": "^1.7.2"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "DANGEROUSLY_DISABLE_HOST_CHECK=true react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"

@@ -14,12 +14,15 @@
     "@huggingface/inference": "^2.6.4",
     "@mastra/core": "^0.24.1",
     "cors": "^2.8.5",
+    "compromise": "^14.14.4",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "ml-distance": "^4.0.1",
     "mongoose": "^8.4.1",
     "multer": "^1.4.5-lts.1",
-    "pdf-parse": "^1.1.1"
+    "natural": "^8.1.0",
+    "pdf-parse": "^1.1.1",
+    "stopword": "^3.1.5"
   },
   "devDependencies": {
     "nodemon": "^3.1.0"
